@@ -1,5 +1,5 @@
 name: GriefPreventionEnterTitles
-version: '${project.version}'
+version: '${version}'
 main: dev.badbird.griefpreventionentertitles.GriefPreventionEnterTitles
-api-version: 1.18
+api-version: 1.20
 depend: [GriefPrevention]
