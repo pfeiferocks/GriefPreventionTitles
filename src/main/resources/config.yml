@@ -19,3 +19,12 @@ watched-worlds: # worlds that will be watched
 
 show-on-dimension-switch: true
 debug: false
+CustomMessage:
+  pfeiferocks:
+    title: '<white>Example'
+    subtitle: '<white>Claim message'
+    actionbar: ''
+  Badbird5907:
+    title: '<white> Another example'
+    subtitle: '<white>message'
+    actionbar: ''
