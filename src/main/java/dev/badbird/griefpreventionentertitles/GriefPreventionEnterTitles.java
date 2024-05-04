@@ -136,7 +136,36 @@ public final class GriefPreventionEnterTitles extends JavaPlugin implements List
                     player.sendActionBar(miniMessage.deserialize(CustomMessage.get(movingTo.getOwnerName() + ".actionbar")));
                 else player.sendActionBar(miniMessage.deserialize(enterActionbar.replace("%player%", movingTo.getOwnerName())));
             }
-        } else if (cachedClaim != null && movingTo == null) { //Leaving a claim
+        } else if (cachedClaim != null && movingTo != null) { //moving to claim
+            if (!cachedClaim.getOwnerName().equals(movingTo.getOwnerName())) {
+                if (debug) System.out.println("Moving to a claim");
+                Component enter, sub;
+                if (enterTitle != null && !enterTitle.isEmpty() || CustomMessage.get(movingTo.getOwnerName() + ".title") != null && !CustomMessage.get(movingTo.getOwnerName() + ".title").isEmpty()) {
+                    if (CustomMessage.containsKey(movingTo.getOwnerName() + ".title"))
+                        enter = miniMessage.deserialize(CustomMessage.get(movingTo.getOwnerName() + ".title"));
+                    else enter = miniMessage.deserialize(enterTitle.replace("%player%", movingTo.getOwnerName()));
+                } else enter = Component.empty();
+                if (enterSubtitle != null && !enterSubtitle.isEmpty() || CustomMessage.get(movingTo.getOwnerName() + ".subtitle") != null && !CustomMessage.get(movingTo.getOwnerName() + ".subtitle").isEmpty()) {
+                    if (CustomMessage.containsKey(movingTo.getOwnerName() + ".subtitle"))
+                        sub = miniMessage.deserialize(CustomMessage.get(movingTo.getOwnerName() + ".subtitle"));
+                    else sub = miniMessage.deserialize(enterSubtitle.replace("%player%", movingTo.getOwnerName()));
+                } else sub = Component.empty();
+
+                claimMap.put(uuid, movingTo);
+                Title title = Title.title(enter, sub);
+                // player.showTitle(title);
+                player.showTitle(title);
+
+                if (enterActionbar != null && !enterActionbar.isEmpty() || CustomMessage.get(movingTo.getOwnerName() + ".actionbar") != null && !CustomMessage.get(movingTo.getOwnerName() + ".actionbar").isEmpty()) {
+                    // player.sendActionBar(miniMessage.deserialize(enterActionbar.replace("%player%", movingTo.getOwnerName())));
+                    if (CustomMessage.containsKey(movingTo.getOwnerName() + ".actionbar"))
+                        player.sendActionBar(miniMessage.deserialize(CustomMessage.get(movingTo.getOwnerName() + ".actionbar")));
+                    else
+                        player.sendActionBar(miniMessage.deserialize(enterActionbar.replace("%player%", movingTo.getOwnerName())));
+                }
+            }
+
+        }else if (cachedClaim != null) { //Leaving a claim
             if (debug) System.out.println("Leaving a claim");
             Component leave, sub;
             if (leaveTitle != null && !leaveTitle.isEmpty()) {
