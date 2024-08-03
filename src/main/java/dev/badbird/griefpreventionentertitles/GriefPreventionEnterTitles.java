@@ -20,14 +20,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public final class GriefPreventionEnterTitles extends JavaPlugin implements Listener {
 
     private static Map<UUID, Claim> claimMap = new HashMap<>();
+    private static final Map<String, String> CustomMessage = new HashMap<>();
 
     private static MiniMessage miniMessage;
 
@@ -67,6 +65,17 @@ public final class GriefPreventionEnterTitles extends JavaPlugin implements List
             leaveSubtitle = getConfig().getString(leaveBase + ".subtitle");
             leaveActionbar = getConfig().getString(leaveBase + ".actionbar");
         }
+
+        Objects.requireNonNull(getConfig().getConfigurationSection("CustomMessage")).getKeys(false)
+                .forEach(key -> {
+                    String title = (String) config.get("CustomMessage." + key + ".title");
+                    String subtitle = (String) config.get("CustomMessage." + key + ".subtitle");
+                    String actionbar = (String) config.get("CustomMessage." + key + ".actionbar");
+
+                    CustomMessage.put(key + ".title",title);
+                    CustomMessage.put(key + ".subtitle",subtitle);
+                    CustomMessage.put(key + ".actionbar",actionbar);
+                });
     }
 
     @Override
@@ -111,16 +120,20 @@ public final class GriefPreventionEnterTitles extends JavaPlugin implements List
 
         Claim cachedClaim = claimMap.get(player.getUniqueId());
         Claim movingTo = GriefPrevention.instance.dataStore.getClaimAt(from, true, cachedClaim);
-        if (cachedClaim == null && movingTo != null) { //Entering a claim
+        if (cachedClaim == null && movingTo != null || cachedClaim != null && movingTo != null) { //Entering a claim
             // System.out.println("x: " + to.getBlockX() + " y: " + to.getBlockY() + " z: " + to.getBlockZ() + " | " + movingTo + " vs " + cachedClaim);
 
             // System.out.println("Entering a claim");
             Component enter = null, sub = null, action = null;
-            if (enterTitle != null && !enterTitle.isEmpty()) {
-                enter = miniMessage.deserialize(enterTitle.replace("%player%", movingTo.getOwnerName()));
+            if (enterTitle != null && !enterTitle.isEmpty() || CustomMessage.get(movingTo.getOwnerName() + ".title") != null && !CustomMessage.get(movingTo.getOwnerName() + ".title").isEmpty()) {
+                if (CustomMessage.containsKey(movingTo.getOwnerName() + ".title"))
+                    enter = miniMessage.deserialize(CustomMessage.get(movingTo.getOwnerName() + ".title"));
+                else enter = miniMessage.deserialize(enterTitle.replace("%player%", movingTo.getOwnerName()));
             } else enter = Component.empty();
-            if (enterSubtitle != null && !enterSubtitle.isEmpty()) {
-                sub = miniMessage.deserialize(enterSubtitle.replace("%player%", movingTo.getOwnerName()));
+            if (enterSubtitle != null && !enterSubtitle.isEmpty() || CustomMessage.get(movingTo.getOwnerName() + ".subtitle") != null && !CustomMessage.get(movingTo.getOwnerName() + ".subtitle").isEmpty()) {
+                if (CustomMessage.containsKey(movingTo.getOwnerName() + ".subtitle"))
+                    sub = miniMessage.deserialize(CustomMessage.get(movingTo.getOwnerName() + ".subtitle"));
+                else sub = miniMessage.deserialize(enterSubtitle.replace("%player%", movingTo.getOwnerName()));
             } else sub = Component.empty();
 
             claimMap.put(player.getUniqueId(), movingTo);
@@ -129,9 +142,11 @@ public final class GriefPreventionEnterTitles extends JavaPlugin implements List
             // player.showTitle(title);
             adventure().player(player).showTitle(title);
 
-            if (enterActionbar != null && !enterActionbar.isEmpty()) {
+            if (enterActionbar != null && !enterActionbar.isEmpty() || CustomMessage.get(movingTo.getOwnerName() + ".actionbar") != null && !CustomMessage.get(movingTo.getOwnerName() + ".actionbar").isEmpty()) {
                 // player.sendActionBar(miniMessage.deserialize(enterActionbar.replace("%player%", movingTo.getOwnerName())));
-                adventure().player(player).sendActionBar(miniMessage.deserialize(enterActionbar.replace("%player%", movingTo.getOwnerName())));
+                if (CustomMessage.containsKey(movingTo.getOwnerName() + ".actionbar"))
+                    adventure().player(player).sendActionBar(miniMessage.deserialize(CustomMessage.get(movingTo.getOwnerName() + ".actionbar")));
+                else adventure().player(player).sendActionBar(miniMessage.deserialize(enterActionbar.replace("%player%", movingTo.getOwnerName())));
             }
         } else if (cachedClaim != null && movingTo == null) { //Leaving a claim
             // System.out.println("x: " + to.getBlockX() + " y: " + to.getBlockY() + " z: " + to.getBlockZ() + " | " + movingTo + " vs " + cachedClaim);

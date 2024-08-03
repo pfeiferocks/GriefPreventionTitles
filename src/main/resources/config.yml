@@ -18,3 +18,13 @@ watched-worlds: # worlds that will be watched
     - world_the_end
 
 show-on-dimension-switch: true
+
+CustomMessage:
+  pfeiferocks:
+    title: '<white>Example'
+    subtitle: '<white>Claim message'
+    actionbar: ''
+  Badbird5907:
+    title: '<white> Another example'
+    subtitle: '<white>message'
+    actionbar: ''
