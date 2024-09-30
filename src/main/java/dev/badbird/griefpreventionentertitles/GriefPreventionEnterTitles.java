@@ -120,7 +120,7 @@ public final class GriefPreventionEnterTitles extends JavaPlugin implements List
 
         Claim cachedClaim = claimMap.get(player.getUniqueId());
         Claim movingTo = GriefPrevention.instance.dataStore.getClaimAt(from, true, cachedClaim);
-        if (cachedClaim == null && movingTo != null || cachedClaim != null && movingTo != null) { //Entering a claim
+        if (cachedClaim != movingTo && movingTo != null) { //Entering a claim
             // System.out.println("x: " + to.getBlockX() + " y: " + to.getBlockY() + " z: " + to.getBlockZ() + " | " + movingTo + " vs " + cachedClaim);
 
             // System.out.println("Entering a claim");
