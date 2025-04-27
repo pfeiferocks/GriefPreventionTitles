@@ -3,7 +3,7 @@ plugins {
     id("io.github.goooler.shadow") version "8.1.8"
 }
 group = "dev.badbird"
-version = "1.3.0"
+version = "1.3.0.custom"
 val jarName = "GriefPreventionTitles"
 
 repositories {
@@ -13,6 +13,8 @@ repositories {
         name = "papermc"
         url = uri("https://repo.papermc.io/repository/maven-public/")
     }
+    maven("https://oss.sonatype.org/content/groups/public/")
+    maven("https://jitpack.io")
 }
 
 dependencies {

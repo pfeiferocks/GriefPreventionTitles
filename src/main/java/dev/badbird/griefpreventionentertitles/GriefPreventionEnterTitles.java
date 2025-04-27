@@ -137,8 +137,8 @@ public final class GriefPreventionEnterTitles extends JavaPlugin implements List
             if (enterActionbar != null && !enterActionbar.isEmpty() || CustomMessage.get(movingTo.getOwnerName() + ".actionbar") != null && !CustomMessage.get(movingTo.getOwnerName() + ".actionbar").isEmpty()) {
                 // player.sendActionBar(miniMessage.deserialize(enterActionbar.replace("%player%", movingTo.getOwnerName())));
                 if (CustomMessage.containsKey(movingTo.getOwnerName() + ".actionbar"))
-                    player(player).sendActionBar(miniMessage.deserialize(CustomMessage.get(movingTo.getOwnerName() + ".actionbar")));
-                else player(player).sendActionBar(miniMessage.deserialize(enterActionbar.replace("%player%", movingTo.getOwnerName())));
+                    player.sendActionBar(miniMessage.deserialize(CustomMessage.get(movingTo.getOwnerName() + ".actionbar")));
+                else player.sendActionBar(miniMessage.deserialize(enterActionbar.replace("%player%", movingTo.getOwnerName())));
             }
         } else if (cachedClaim != null && movingTo == null) { // Leaving a claim
             if (cachedClaim.isAdminClaim() && !getConfig().getBoolean("show-on-admin-claim", true)) {
