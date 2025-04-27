@@ -3,23 +3,21 @@ plugins {
     id("io.github.goooler.shadow") version "8.1.8"
 }
 group = "dev.badbird"
-version = "1.2.1"
+version = "1.3.0"
 val jarName = "GriefPreventionTitles"
 
 repositories {
     mavenCentral()
     mavenLocal()
-    maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
-    maven("https://oss.sonatype.org/content/groups/public/")
-    maven("https://jitpack.io")
+    maven {
+        name = "papermc"
+        url = uri("https://repo.papermc.io/repository/maven-public/")
+    }
 }
 
 dependencies {
-    compileOnly("org.spigotmc:spigot-api:1.20.1-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.20.1-R0.1-SNAPSHOT")
     compileOnly("com.github.GriefPrevention:GriefPrevention:16.18.2")
-    implementation("net.kyori:adventure-platform-bukkit:4.3.3")
-    implementation("net.kyori:adventure-api:4.17.0")
-    implementation("net.kyori:adventure-text-minimessage:4.17.0")
 }
 val targetJavaVersion = 17
 java {

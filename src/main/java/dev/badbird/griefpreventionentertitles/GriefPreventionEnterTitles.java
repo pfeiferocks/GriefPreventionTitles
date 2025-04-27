@@ -2,7 +2,6 @@ package dev.badbird.griefpreventionentertitles;
 
 import me.ryanhamshire.GriefPrevention.Claim;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
-import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.title.Title;
@@ -37,21 +36,11 @@ public final class GriefPreventionEnterTitles extends JavaPlugin implements List
     private static String leaveActionbar;
     private FileConfiguration config;
 
-    private BukkitAudiences adventure;
-
-    public BukkitAudiences adventure() {
-        if(this.adventure == null) {
-            throw new IllegalStateException("Tried to access Adventure when the plugin was disabled!");
-        }
-        return this.adventure;
-    }
-
     @Override
     public void onEnable() {
-        adventure = BukkitAudiences.create(this);
         miniMessage = MiniMessage.miniMessage();
         if (!getDataFolder().exists()) getDataFolder().mkdir();
-        if (!new File(getDataFolder() +  "/config.yml").exists()) saveDefaultConfig();
+        if (!new File(getDataFolder() + "/config.yml").exists()) saveDefaultConfig();
         getServer().getPluginManager().registerEvents(this, this);
         String enterBase = "titles.enter";
         if (getConfig().getBoolean(enterBase + ".enabled")) {
@@ -120,7 +109,10 @@ public final class GriefPreventionEnterTitles extends JavaPlugin implements List
 
         Claim cachedClaim = claimMap.get(player.getUniqueId());
         Claim movingTo = GriefPrevention.instance.dataStore.getClaimAt(from, true, cachedClaim);
-        if (cachedClaim != movingTo && movingTo != null) { //Entering a claim
+        if (cachedClaim != movingTo && movingTo != null) { // Entering a claim
+            if (movingTo.isAdminClaim() && !getConfig().getBoolean("show-on-admin-claim", true)) {
+                return;
+            }
             // System.out.println("x: " + to.getBlockX() + " y: " + to.getBlockY() + " z: " + to.getBlockZ() + " | " + movingTo + " vs " + cachedClaim);
 
             // System.out.println("Entering a claim");
@@ -140,15 +132,18 @@ public final class GriefPreventionEnterTitles extends JavaPlugin implements List
             Title title = Title.title(enter, sub);
             // System.out.println("Title: " + title);
             // player.showTitle(title);
-            adventure().player(player).showTitle(title);
+            player.showTitle(title);
 
             if (enterActionbar != null && !enterActionbar.isEmpty() || CustomMessage.get(movingTo.getOwnerName() + ".actionbar") != null && !CustomMessage.get(movingTo.getOwnerName() + ".actionbar").isEmpty()) {
                 // player.sendActionBar(miniMessage.deserialize(enterActionbar.replace("%player%", movingTo.getOwnerName())));
                 if (CustomMessage.containsKey(movingTo.getOwnerName() + ".actionbar"))
-                    adventure().player(player).sendActionBar(miniMessage.deserialize(CustomMessage.get(movingTo.getOwnerName() + ".actionbar")));
-                else adventure().player(player).sendActionBar(miniMessage.deserialize(enterActionbar.replace("%player%", movingTo.getOwnerName())));
+                    player(player).sendActionBar(miniMessage.deserialize(CustomMessage.get(movingTo.getOwnerName() + ".actionbar")));
+                else player(player).sendActionBar(miniMessage.deserialize(enterActionbar.replace("%player%", movingTo.getOwnerName())));
             }
-        } else if (cachedClaim != null && movingTo == null) { //Leaving a claim
+        } else if (cachedClaim != null && movingTo == null) { // Leaving a claim
+            if (cachedClaim.isAdminClaim() && !getConfig().getBoolean("show-on-admin-claim", true)) {
+                return;
+            }
             // System.out.println("x: " + to.getBlockX() + " y: " + to.getBlockY() + " z: " + to.getBlockZ() + " | " + movingTo + " vs " + cachedClaim);
 
             // System.out.println("Leaving a claim");
@@ -163,11 +158,11 @@ public final class GriefPreventionEnterTitles extends JavaPlugin implements List
             //System.out.println("Title: " + leave + " | " + sub);
             Title title = Title.title(leave, sub);
             // player.showTitle(title);
-            adventure().player(player).showTitle(title);
+            player.showTitle(title);
 
             if (leaveActionbar != null && !leaveActionbar.isEmpty()) {
                 // player.sendActionBar(miniMessage.deserialize(leaveActionbar.replace("%player%", cachedClaim.getOwnerName())));
-                adventure().player(player).sendActionBar(miniMessage.deserialize(leaveActionbar.replace("%player%", cachedClaim.getOwnerName())));
+                player.sendActionBar(miniMessage.deserialize(leaveActionbar.replace("%player%", cachedClaim.getOwnerName())));
             }
         }
     }
